@@ -4,15 +4,18 @@
  */
 package de.foopara.phingking.nodes;
 
+import de.foopara.phingking.nodes.actions.RunAction;
+import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 /**
  *
  * @author n.specht
  */
-public class TargetNode extends AbstractNode {
+public class TargetNode extends AbstractNode implements Comparable<TargetNode>{
     private Target target;
 
     public TargetNode(Target key) {
@@ -20,5 +23,21 @@ public class TargetNode extends AbstractNode {
         this.target = key;
         this.setDisplayName(key.getName());
         this.setIconBaseWithExtension("de/foopara/phingking/resources/target.png");
+    }
+
+    @Override
+    public int compareTo(TargetNode node) {
+        return this.target.getName().compareTo(node.getName());
+    }
+
+    @Override
+    public Action[] getActions(boolean popup) {
+        return new Action [] {
+            SystemAction.get(RunAction.class)
+        };
+    }
+
+    public boolean canRun() {
+        return true;
     }
 }

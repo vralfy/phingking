@@ -4,7 +4,9 @@
  */
 package de.foopara.phingking.nodes;
 
+import de.foopara.phingking.registry.TargetRegistry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.openide.nodes.Index;
 import org.openide.nodes.Node;
@@ -23,11 +25,11 @@ public class TargetChildren extends Index.ArrayChildren {
     @Override
     protected List<Node> initCollection() {
         ArrayList childrenNodes = new ArrayList();
-        childrenNodes.add(new TargetNode(new Target("1")));
-        childrenNodes.add(new TargetNode(new Target("2")));
-        childrenNodes.add(new TargetNode(new Target("3")));
-        childrenNodes.add(new TargetNode(new Target("4")));
-        childrenNodes.add(new TargetNode(new Target("RubbelDieKatz")));
+        TargetRegistry tr = TargetRegistry.getInstance(this.category.getLookup());
+        for (String target : tr.getTargets(this.category.getName())) {
+            childrenNodes.add(new TargetNode(new Target(target)));
+        }
+        Collections.sort(childrenNodes);
         return childrenNodes;
     }
 }

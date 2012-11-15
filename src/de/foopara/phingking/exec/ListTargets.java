@@ -4,6 +4,7 @@
  */
 package de.foopara.phingking.exec;
 
+import de.foopara.phingking.Helper;
 import de.foopara.phingking.options.OptionMain;
 import de.foopara.phingking.options.ProjectProperties;
 import de.foopara.phingking.registry.TargetRegistry;
@@ -29,12 +30,12 @@ public class ListTargets {
             ProjectProperties pp = new ProjectProperties(this.lookup);
             StringBuilder cmd = new StringBuilder();
 
-            File config = new File(pp.get("buildfile", null));
-            File exe = new File(OptionMain.getExecutable());
-
-            if (!exe.exists() || !exe.isFile() || !config.exists() || !config.isFile()) {
+            if (!Helper.canRunPhing(this.lookup)) {
                 return;
             }
+
+            File config = new File(pp.get("buildfile", null));
+            File exe = new File(OptionMain.getExecutable());
 
             cmd.append(exe.getAbsolutePath())
                     .append(" -f ")

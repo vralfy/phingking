@@ -4,6 +4,7 @@
  */
 package de.foopara.phingking.options.ui;
 
+import de.foopara.phingking.NavigatorTopComponent;
 import de.foopara.phingking.exec.ListTargets;
 import de.foopara.phingking.options.ProjectProperties;
 import java.io.File;
@@ -109,9 +110,9 @@ public class PropertiesPanel extends javax.swing.JPanel {
     public void save() {
         ProjectProperties pp = new ProjectProperties(this.lookup);
         pp.put("buildfile", this.jTextField1.getText());
-
-        ListTargets lt = new ListTargets(this.lookup);
-        lt.run();
+        if (NavigatorTopComponent.getInstance() != null) {
+            NavigatorTopComponent.getInstance().setLookup(this.lookup);
+        }
     }
 
     public void load() {

@@ -67,7 +67,10 @@ public class ProjectProperties {
         }
         FileObject fo = project.getProjectDirectory();
 
-        File config = new File(FileUtil.toFile(fo), "nbproject/phingking.properties");
+        File config = new File(FileUtil.toFile(fo), "nbproject/private/phingking.properties");
+        if (!config.getParentFile().exists()) {
+            config.getParentFile().mkdirs();
+        }
         if (!config.exists()) {
             try {
                 config.createNewFile();

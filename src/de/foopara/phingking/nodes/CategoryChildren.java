@@ -34,7 +34,7 @@ public class CategoryChildren extends Children.Keys {
         Category[] categories = new Category[categoriesSet.size()];
         int i = 0;
         for (String cat : categoriesSet) {
-            categories[i] = new Category(cat);
+            categories[i] = new Category(cat, this.lookup);
             i++;
         }
         setKeys(categories);

@@ -4,6 +4,8 @@
  */
 package de.foopara.phingking.nodes;
 
+import org.openide.util.Lookup;
+
 /**
  *
  * @author n.specht
@@ -11,8 +13,11 @@ package de.foopara.phingking.nodes;
 public class Category {
     private String name;
 
-    public Category(String name) {
+    private Lookup lookup;
+
+    public Category(String name, Lookup context) {
         this.setName(name);
+        this.lookup = context;
     }
 
     public String getName() {
@@ -21,5 +26,9 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Lookup getLookup() {
+        return this.lookup;
     }
 }

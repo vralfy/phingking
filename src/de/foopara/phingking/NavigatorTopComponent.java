@@ -7,8 +7,6 @@ package de.foopara.phingking;
 import de.foopara.phingking.nodes.CategoryChildren;
 import de.foopara.phingking.nodes.RootNode;
 import de.foopara.phingking.registry.TargetRegistry;
-import java.util.Collection;
-import org.netbeans.api.project.Project;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -17,11 +15,11 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
+import org.openide.windows.Mode;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -29,7 +27,7 @@ import org.openide.util.Utilities;
 @ConvertAsProperties(dtd = "-//de.foopara.phingking//Navigator//EN", autostore = false)
 @TopComponent.Description( preferredID = "NavigatorTopComponent", iconBase="de/foopara/phingking/resources/icon.png",
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
-@TopComponent.Registration(mode = "explorer", openAtStartup = true)
+@TopComponent.Registration(mode = "tools", openAtStartup = true)
 @ActionID(category = "Window", id = "de.foopara.phingking.NavigatorTopComponent")
 @ActionReference(path = "Menu/Window" , position = 733 )
 @TopComponent.OpenActionRegistration(displayName = "#CTL_NavigatorAction", preferredID = "NavigatorTopComponent")
@@ -55,17 +53,10 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
         setToolTipText(Bundle.HINT_NavigatorTopComponent());
         this.associateLookup(ExplorerUtils.createLookup(this.explorerManager, getActionMap()));
         this.explorerManager.getRootContext().setDisplayName("Phing Targets");
+        this.lookup = this.explorerManager.getExploredContext().getLookup();
 
-        Utilities.actionsGlobalContext().lookupResult(DataObject.class).addLookupListener(new LookupListener() {
-            @Override
-            public void resultChanged(LookupEvent ev) {
-                Collection c = ((Lookup.Result) ev.getSource()).allInstances();
-                for (Object i : c) {
-                    DataObject item = (DataObject)i;
-                    NavigatorTopComponent.getInstance().setLookup(item.getLookup());
-                }
-            }
-        });
+        Utilities.actionsGlobalContext().lookupResult(DataObject.class).addLookupListener(new ChangingLookupListener());
+//        Utilities.actionsGlobalContext().lookupResult(Project.class).addLookupListener(new ChangingLookupListener());
     }
 
     /**
@@ -111,6 +102,9 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
     }// </editor-fold>//GEN-END:initComponents
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         TargetRegistry tr = TargetRegistry.getInstance(this.lookup);
+        if (tr == null) {
+            return;
+        }
         tr.update(lookup);
         this.update();
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -130,6 +124,28 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
         NavigatorTopComponent.instance = null;
     }
 
+    @Override
+    public void open() {
+        /**
+         * Possible Modes
+         *
+         * explorer          = Projects window (left side)
+         * properties        = Properties window (right side)
+         * leftSlidingSide   = button on left sidebar
+         * rightSlidingSide  = button on the right sidebar
+         * bottomSlidingSide = button on the bottom bar
+         * editor            = where the editor is (center)
+         * output            = Output Window (bottom)
+         * navigator         = Navigator window (lower left)
+         * tools             = early navigator
+         */
+        Mode mode = WindowManager.getDefault().findMode("navigator");
+        if (mode != null) {
+            mode.dockInto(this);
+        }
+        super.open();
+    }
+
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
@@ -138,7 +154,7 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
     }
 
     void readProperties(java.util.Properties p) {
-//        String version = p.getProperty("version");
+        String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
 
@@ -149,6 +165,11 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
 
     public void setLookup(Lookup lkp) {
         this.lookup = lkp;
+        TargetRegistry tr = TargetRegistry.getInstance(this.lookup);
+        if (tr == null) {
+            return;
+        }
+        this.update();
     }
 
     public void update() {
