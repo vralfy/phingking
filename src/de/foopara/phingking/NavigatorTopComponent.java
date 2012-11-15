@@ -4,7 +4,6 @@
  */
 package de.foopara.phingking;
 
-import de.foopara.phingking.exec.ListTargets;
 import de.foopara.phingking.nodes.CategoryChildren;
 import de.foopara.phingking.nodes.RootNode;
 import de.foopara.phingking.registry.TargetRegistry;
@@ -55,7 +54,6 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
         setName(Bundle.CTL_NavigatorTopComponent());
         setToolTipText(Bundle.HINT_NavigatorTopComponent());
         this.associateLookup(ExplorerUtils.createLookup(this.explorerManager, getActionMap()));
-        Project pro = this.explorerManager.getExploredContext().getLookup().lookup(Project.class);
         this.explorerManager.getRootContext().setDisplayName("Phing Targets");
 
         Utilities.actionsGlobalContext().lookupResult(DataObject.class).addLookupListener(new LookupListener() {
@@ -140,7 +138,7 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
     }
 
     void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
+//        String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
 

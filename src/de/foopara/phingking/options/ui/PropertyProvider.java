@@ -4,13 +4,10 @@
  */
 package de.foopara.phingking.options.ui;
 
-import de.foopara.phingking.NavigatorTopComponent;
-import java.util.ResourceBundle;
 import javax.swing.JComponent;
 import org.netbeans.spi.project.ui.support.ProjectCustomizer;
 import org.netbeans.spi.project.ui.support.ProjectCustomizer.Category;
 import org.openide.util.Lookup;
-import org.openide.util.NbBundle;
 
 /**
  *
@@ -26,8 +23,8 @@ public class PropertyProvider implements ProjectCustomizer.CompositeCategoryProv
 
     @Override
     public Category createCategory(Lookup context) {
-        ResourceBundle bundle = NbBundle.getBundle(NavigatorTopComponent.class);
-        return  ProjectCustomizer.Category.create("phingking", "PhingKing", null);
+        //ResourceBundle bundle = NbBundle.getBundle(NavigatorTopComponent.class);
+        return ProjectCustomizer.Category.create("phingking", "PhingKing", null);
     }
 
     @Override

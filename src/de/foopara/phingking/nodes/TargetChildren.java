@@ -20,6 +20,7 @@ public class TargetChildren extends Index.ArrayChildren {
         this.category = category;
     }
 
+    @Override
     protected List<Node> initCollection() {
         ArrayList childrenNodes = new ArrayList();
         childrenNodes.add(new TargetNode(new Target("1")));
