@@ -7,10 +7,12 @@ package de.foopara.phingking.exec;
 import de.foopara.phingking.Helper;
 import de.foopara.phingking.options.OptionMain;
 import de.foopara.phingking.options.ProjectProperties;
+import de.foopara.phingking.registry.TargetEntry;
 import de.foopara.phingking.registry.TargetRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.swing.JOptionPane;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -18,11 +20,13 @@ import org.openide.util.Lookup;
  *
  * @author n.specht
  */
-public class ListTargets {
+public class RunTarget {
     private final Lookup lookup;
+    private final TargetEntry target;
 
-    public ListTargets(Lookup context) {
+    public RunTarget(Lookup context, TargetEntry target) {
         this.lookup = context;
+        this.target = target;
     }
 
     public void run() {
@@ -36,21 +40,26 @@ public class ListTargets {
 
             File config = new File(pp.get("buildfile", null));
             File exe = new File(OptionMain.getExecutable());
+            File logfile = File.createTempFile("phingking", ".log");
 
             cmd.append(exe.getAbsolutePath())
+                    .append(" -q -logfile ")
+                    .append(logfile.getAbsolutePath())
                     .append(" -f ")
                     .append(config.getAbsolutePath())
-                    .append(" -l");
+                    .append(" ")
+                    .append(this.target.getTarget());
+
             Process child = Runtime.getRuntime().exec(cmd.toString(), null, config.getParentFile());
             StringBuilder tmp = new StringBuilder();
             InputStream in = child.getInputStream();
-
             int c;
             while((c = in.read()) != -1) {
                     tmp.append((char)c);
+                    System.out.println(tmp.toString());
             }
+//            JOptionPane.showMessageDialog(null, tmp.toString());
 
-            TargetRegistry.getInstance(this.lookup).parse(tmp.toString());
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

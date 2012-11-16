@@ -4,6 +4,8 @@
  */
 package de.foopara.phingking.nodes.actions;
 
+import de.foopara.phingking.NavigatorTopComponent;
+import de.foopara.phingking.registry.TargetEntry;
 import java.awt.event.ActionEvent;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.CallbackSystemAction;
@@ -14,6 +16,12 @@ import org.openide.util.actions.CallbackSystemAction;
  */
 public class RunAction extends CallbackSystemAction {
 
+    private TargetEntry target;
+
+    public void setTarget(TargetEntry target) {
+        this.target = target;
+    }
+
     @Override
     public void initialize() {
         super.initialize();
@@ -23,7 +31,7 @@ public class RunAction extends CallbackSystemAction {
 
     @Override
     public String getName() {
-        return "Run";
+        return "Run " + this.target.getTarget().trim();
     }
 
     @Override
@@ -43,7 +51,8 @@ public class RunAction extends CallbackSystemAction {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        System.out.println("BLABLABLA\n\n\n");
+        System.out.println("Try to run " + this.target.getTarget() + "...\n\n\n");
+        NavigatorTopComponent.getInstance().runTarget(this.target);
     }
 
     @Override

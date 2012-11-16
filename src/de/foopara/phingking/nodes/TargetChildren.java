@@ -5,6 +5,7 @@
 package de.foopara.phingking.nodes;
 
 import de.foopara.phingking.registry.TargetRegistry;
+import de.foopara.phingking.registry.TargetEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +27,8 @@ public class TargetChildren extends Index.ArrayChildren {
     protected List<Node> initCollection() {
         ArrayList childrenNodes = new ArrayList();
         TargetRegistry tr = TargetRegistry.getInstance(this.category.getLookup());
-        for (String target : tr.getTargets(this.category.getName())) {
-            childrenNodes.add(new TargetNode(new Target(target)));
+        for (TargetEntry target : tr.getTargets(this.category.getName())) {
+            childrenNodes.add(new TargetNode(target));
         }
         Collections.sort(childrenNodes);
         return childrenNodes;

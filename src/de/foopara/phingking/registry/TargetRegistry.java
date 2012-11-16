@@ -5,9 +5,13 @@
 package de.foopara.phingking.registry;
 
 import de.foopara.phingking.exec.ListTargets;
+import de.foopara.phingking.exec.RunTarget;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import org.netbeans.api.project.FileOwnerQuery;
+import org.netbeans.api.project.Project;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
@@ -25,6 +29,14 @@ public class TargetRegistry {
             return null;
         }
         FileObject primary = dataObject.getPrimaryFile();
+        Project pro = lookup.lookup(Project.class);
+        if (pro == null) {
+            pro = FileOwnerQuery.getOwner(primary);
+        }
+        if (pro != null) {
+            primary = pro.getProjectDirectory();
+        }
+
         if (!TargetRegistry.instances.containsKey(primary.getPath())) {
             TargetRegistry item = new TargetRegistry();
             TargetRegistry.instances.put(primary.getPath(), item);
@@ -33,8 +45,14 @@ public class TargetRegistry {
         return TargetRegistry.instances.get(primary.getPath());
     }
 
-    public class TargetList extends HashSet<String> {};
+    public class TargetList extends HashSet<TargetEntry> {};
     private HashMap<String, TargetList> categories = new HashMap<String, TargetList>();
+    private UUID viewHash = null;
+
+    public TargetRegistry() {
+        this.viewHash = UUID.randomUUID();
+        System.out.println(this.viewHash);
+    }
 
     public void update(Lookup lkp) {
         this.categories.clear();
@@ -51,7 +69,7 @@ public class TargetRegistry {
             TargetList targets = new TargetList();
             for(String line : catSplit) {
                 if (foundCatTitle) {
-                    targets.add(line.trim());
+                    targets.add(this.parseToTargetEntry(line));
                 }
                 if (line.trim().startsWith("------------")) {
                     foundCatTitle = true;
@@ -70,5 +88,23 @@ public class TargetRegistry {
 
     public TargetList getTargets(String categorie) {
         return this.categories.get(categorie);
+    }
+
+    private TargetEntry parseToTargetEntry(String line) {
+        String target = line.trim();
+        String discr = "";
+        if (target.indexOf(" ") > 0) {
+            discr = target.substring(target.indexOf(" ")).trim();
+            target = target.substring(0, target.indexOf(" "));
+        }
+
+        TargetEntry t = new TargetEntry(target);
+        t.setDiscription(discr);
+
+        return t;
+    }
+
+    public UUID getId() {
+        return this.viewHash;
     }
 }

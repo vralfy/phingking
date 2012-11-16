@@ -4,22 +4,20 @@
  */
 package de.foopara.phingking.nodes;
 
+import de.foopara.phingking.registry.TargetEntry;
+
 /**
  *
  * @author n.specht
  */
 public class Target {
-    private String name;
+    private TargetEntry target;
 
-    public Target(String name) {
-        this.name = name;
+    public Target(TargetEntry t) {
+        this.target = t;
     }
 
     public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return this.target.getTarget();
     }
 }

@@ -4,9 +4,12 @@
  */
 package de.foopara.phingking;
 
+import de.foopara.phingking.exec.RunTarget;
 import de.foopara.phingking.nodes.CategoryChildren;
 import de.foopara.phingking.nodes.RootNode;
+import de.foopara.phingking.registry.TargetEntry;
 import de.foopara.phingking.registry.TargetRegistry;
+import java.util.UUID;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -39,6 +42,7 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 public final class NavigatorTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private transient ExplorerManager explorerManager = new ExplorerManager();
+    private UUID currentView = null;
     private Lookup lookup = null;
 
     private static NavigatorTopComponent instance = null;
@@ -169,10 +173,19 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
         if (tr == null) {
             return;
         }
-        this.update();
+        if (this.currentView == null || this.currentView.compareTo(tr.getId()) != 0) {
+            this.update();
+            this.currentView = tr.getId();
+        }
+        System.out.println(this.currentView + " " + tr.getId());
     }
 
     public void update() {
         this.explorerManager.setRootContext(new RootNode(new CategoryChildren(this.lookup)));
+    }
+
+    public void runTarget(TargetEntry entry) {
+        RunTarget run = new RunTarget(this.lookup, entry);
+        run.run();
     }
 }
