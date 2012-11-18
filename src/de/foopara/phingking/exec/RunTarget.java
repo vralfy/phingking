@@ -54,9 +54,22 @@ public class RunTarget {
             StringBuilder tmp = new StringBuilder();
             InputStream in = child.getInputStream();
             int c;
+
+            UserInput input = null;
+
             while((c = in.read()) != -1) {
                     tmp.append((char)c);
-                    System.out.println(tmp.toString());
+                    System.out.print(tmp);
+                    if (tmp.toString().trim().length() > 0) {
+                        if (input == null) {
+                            input = new UserInput(child.getOutputStream());
+                            input.setText(tmp.toString().trim());
+                            input.start();
+                        } else {
+                            input.appendText(tmp.toString());
+                        }
+                        tmp = new StringBuilder();
+                    }
             }
 //            JOptionPane.showMessageDialog(null, tmp.toString());
 
