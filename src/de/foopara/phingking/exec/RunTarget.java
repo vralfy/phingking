@@ -8,11 +8,10 @@ import de.foopara.phingking.Helper;
 import de.foopara.phingking.options.OptionMain;
 import de.foopara.phingking.options.ProjectProperties;
 import de.foopara.phingking.registry.TargetEntry;
-import de.foopara.phingking.registry.TargetRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -59,9 +58,8 @@ public class RunTarget {
 
             while((c = in.read()) != -1) {
                     tmp.append((char)c);
-                    System.out.print(tmp);
                     if (tmp.toString().trim().length() > 0) {
-                        if (input == null) {
+                        if (input == null || input.isDone()) {
                             input = new UserInput(child.getOutputStream());
                             input.setText(tmp.toString().trim());
                             input.start();
@@ -71,8 +69,6 @@ public class RunTarget {
                         tmp = new StringBuilder();
                     }
             }
-//            JOptionPane.showMessageDialog(null, tmp.toString());
-
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

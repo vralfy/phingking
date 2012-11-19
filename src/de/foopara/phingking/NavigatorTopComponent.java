@@ -5,6 +5,7 @@
 package de.foopara.phingking;
 
 import de.foopara.phingking.exec.RunTarget;
+import de.foopara.phingking.exec.RunThread;
 import de.foopara.phingking.nodes.CategoryChildren;
 import de.foopara.phingking.nodes.RootNode;
 import de.foopara.phingking.registry.TargetEntry;
@@ -177,7 +178,10 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
             this.update();
             this.currentView = tr.getId();
         }
-        System.out.println(this.currentView + " " + tr.getId());
+    }
+
+    public Lookup getCurrentLookup() {
+        return this.lookup;
     }
 
     public void update() {
@@ -186,6 +190,6 @@ public final class NavigatorTopComponent extends TopComponent implements Explore
 
     public void runTarget(TargetEntry entry) {
         RunTarget run = new RunTarget(this.lookup, entry);
-        run.run();
+        new Thread(new RunThread(run)).start();
     }
 }

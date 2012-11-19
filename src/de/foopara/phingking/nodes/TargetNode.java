@@ -4,6 +4,9 @@
  */
 package de.foopara.phingking.nodes;
 
+import de.foopara.phingking.nodes.actions.DefavoriteAction;
+import de.foopara.phingking.nodes.actions.EditAction;
+import de.foopara.phingking.nodes.actions.FavoriteAction;
 import de.foopara.phingking.nodes.actions.RunAction;
 import de.foopara.phingking.registry.TargetEntry;
 import javax.swing.Action;
@@ -22,7 +25,7 @@ public class TargetNode extends AbstractNode implements Comparable<TargetNode>{
     public TargetNode(TargetEntry key) {
         super (Children.LEAF, Lookups.fixed(new Object[] {key}));
         this.target = key;
-        this.setDisplayName(key.getTarget());
+        this.setDisplayName(key.getDisplayName());
         this.setShortDescription(key.getDiscription());
         this.setIconBaseWithExtension("de/foopara/phingking/resources/target.png");
     }
@@ -35,9 +38,19 @@ public class TargetNode extends AbstractNode implements Comparable<TargetNode>{
     @Override
     public Action[] getActions(boolean popup) {
         RunAction run = SystemAction.get(RunAction.class);
+        FavoriteAction fav = SystemAction.get(FavoriteAction.class);
+        DefavoriteAction dfav = SystemAction.get(DefavoriteAction.class);
+        EditAction edit = SystemAction.get(EditAction.class);
+
         run.setTarget(this.target);
+        fav.setTarget(this.target);
+        dfav.setTarget(this.target);
+        edit.setTarget(this.target);
+
         return new Action [] {
-            run
+            run,
+            (this.target.isFavorite() ? dfav : fav),
+            (this.target.isFavorite() ? edit : null),
         };
     }
 

@@ -6,6 +6,8 @@ package de.foopara.phingking.registry;
 
 import de.foopara.phingking.exec.ListTargets;
 import de.foopara.phingking.exec.RunTarget;
+import de.foopara.phingking.options.FavoritedTargets;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,17 +47,16 @@ public class TargetRegistry {
         return TargetRegistry.instances.get(primary.getPath());
     }
 
-    public class TargetList extends HashSet<TargetEntry> {};
     private HashMap<String, TargetList> categories = new HashMap<String, TargetList>();
     private UUID viewHash = null;
 
     public TargetRegistry() {
         this.viewHash = UUID.randomUUID();
-        System.out.println(this.viewHash);
     }
 
     public void update(Lookup lkp) {
         this.categories.clear();
+        this.categories.put("Favorites:", FavoritedTargets.get(lkp));
         ListTargets lt = new ListTargets(lkp);
         lt.run();
     }
