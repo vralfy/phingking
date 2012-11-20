@@ -29,12 +29,12 @@ import org.openide.windows.WindowManager;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//de.foopara.phingking//Navigator//EN", autostore = false)
-@TopComponent.Description( preferredID = "NavigatorTopComponent", iconBase="de/foopara/phingking/resources/icon.png",
+@TopComponent.Description( preferredID = "PhingKingNavigatorTopComponent", iconBase="de/foopara/phingking/resources/icon.png",
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @TopComponent.Registration(mode = "tools", openAtStartup = true)
 @ActionID(category = "Window", id = "de.foopara.phingking.NavigatorTopComponent")
-@ActionReference(path = "Menu/Window" , position = 733 )
-@TopComponent.OpenActionRegistration(displayName = "#CTL_NavigatorAction", preferredID = "NavigatorTopComponent")
+@ActionReference(path = "Menu/Window" , position = 999 )
+@TopComponent.OpenActionRegistration(displayName = "#CTL_NavigatorAction", preferredID = "PhingKingNavigatorTopComponent")
 @Messages({
     "CTL_NavigatorAction=Phing Targets",
     "CTL_NavigatorTopComponent=Phing Targets",
