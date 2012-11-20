@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 OpenIDE-Module: de.foopara.phingking/0
 OpenIDE-Module-Localizing-Bundle: de/foopara/phingking/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
-OpenIDE-Module-Specification-Version: 0.0.0.1
+OpenIDE-Module-Specification-Version: 0.1.0.0
 OpenIDE-Module-Layer: de/foopara/phingking/layer.xml

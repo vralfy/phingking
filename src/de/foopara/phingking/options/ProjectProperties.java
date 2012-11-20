@@ -38,14 +38,12 @@ public class ProjectProperties {
                 p.store(new FileOutputStream(config), "Phingking options");
             }
         } catch (IOException ex) {
-            System.err.println(ex);
         }
     }
 
     public String get(String name, String def) {
         File config = this.getConfigFile();
         if (config == null) {
-            System.err.println("config not found");
             return def;
         }
 
@@ -53,9 +51,7 @@ public class ProjectProperties {
         try {
             p.load(new FileInputStream(config));
         } catch (FileNotFoundException ex) {
-            System.err.println(ex);
         } catch (IOException ex) {
-            System.err.println(ex);
         }
         return p.getProperty(name, def);
     }
@@ -75,7 +71,6 @@ public class ProjectProperties {
             try {
                 config.createNewFile();
             } catch (IOException ex) {
-                System.err.println(ex);
             }
         }
         return config;

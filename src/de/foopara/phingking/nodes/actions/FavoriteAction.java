@@ -59,6 +59,7 @@ public class FavoriteAction extends CallbackSystemAction {
         TargetList tl = tr.getTargets("Favorites:");
 
         TargetEntry newEntry = new TargetEntry(this.target.getTarget());
+        newEntry.setDiscription(this.target.getDiscription());
         newEntry.isFavorite(true);
         TargetEditor te = new TargetEditor(newEntry);
         te.edit();

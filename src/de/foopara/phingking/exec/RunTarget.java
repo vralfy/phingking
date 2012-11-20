@@ -11,9 +11,12 @@ import de.foopara.phingking.registry.TargetEntry;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.swing.SwingUtilities;
+import java.io.Reader;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import org.openide.windows.IOProvider;
+import org.openide.windows.InputOutput;
+import org.openide.windows.OutputWriter;
 
 /**
  *
@@ -42,12 +45,29 @@ public class RunTarget {
             File logfile = File.createTempFile("phingking", ".log");
 
             cmd.append(exe.getAbsolutePath())
-                    .append(" -q -logfile ")
+                    .append(" -logfile ")
                     .append(logfile.getAbsolutePath())
                     .append(" -f ")
                     .append(config.getAbsolutePath())
-                    .append(" ")
-                    .append(this.target.getTarget());
+                    .append(" ");
+            for(String paramKey : this.target.getParameter().keySet()) {
+                cmd.append("-D")
+                        .append(paramKey)
+                        .append("=")
+                        .append(this.target.getParameter().get(paramKey))
+                        .append(" ");
+            }
+            cmd.append(this.target.getTarget());
+
+            InputOutput ideIO = IOProvider.getDefault().getIO("PhingKing: " + this.target.getDisplayName(), true);
+            ideIO.select();
+            ideIO.setErrVisible(true);
+            ideIO.setOutputVisible(true);
+            ideIO.getOut().write("Running " + cmd.toString() + "\n\n");
+            ideIO.getOut().flush();
+
+            TailReader tr = new TailReader(ideIO, logfile);
+            tr.start();
 
             Process child = Runtime.getRuntime().exec(cmd.toString(), null, config.getParentFile());
             StringBuilder tmp = new StringBuilder();
@@ -69,6 +89,30 @@ public class RunTarget {
                         tmp = new StringBuilder();
                     }
             }
+
+            try {
+                if (child.waitFor() != 0) {
+                    if (input != null && input.isDone() == false) {
+                        input.setErrorMode();
+                    } else {
+                        input = new UserInput(child.getOutputStream());
+                        input.setText(tmp.toString());
+                        input.setErrorMode();
+                        input.start();
+                    }
+                }
+            } catch (InterruptedException ex) {
+
+            }
+            tr.stopReading();
+            logfile.delete();
+
+            ideIO.getOut().write("\n--- Phing has finished its job! ---\n\n");
+            ideIO.getOut().flush();
+
+            ideIO.getIn().close();
+            ideIO.getOut().close();
+            ideIO.getErr().close();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
