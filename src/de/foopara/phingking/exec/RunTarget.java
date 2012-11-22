@@ -11,12 +11,10 @@ import de.foopara.phingking.registry.TargetEntry;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
-import org.openide.windows.OutputWriter;
 
 /**
  *
@@ -45,7 +43,7 @@ public class RunTarget {
             File logfile = File.createTempFile("phingking", ".log");
 
             cmd.append(exe.getAbsolutePath())
-                    .append(" -logfile ")
+                    .append(" -q -logfile ")
                     .append(logfile.getAbsolutePath())
                     .append(" -f ")
                     .append(config.getAbsolutePath())
@@ -104,6 +102,10 @@ public class RunTarget {
             } catch (InterruptedException ex) {
 
             }
+            if (input != null) {
+                input.setDone();
+            }
+
             tr.stopReading();
             logfile.delete();
 

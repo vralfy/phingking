@@ -4,6 +4,7 @@
  */
 package de.foopara.phingking.exec;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -12,8 +13,9 @@ import java.io.OutputStream;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -23,8 +25,11 @@ public class UserInput extends Thread {
     private final OutputStream out;
     private final JPanel mainPanel = new JPanel();
     private final JLabel errorLabel = new JLabel();
+    private final JScrollPane infoScroll = new JScrollPane();
     private final JLabel infoLabel = new JLabel();
     private final JTextField inputField = new JTextField();
+    private StringBuilder promptBuffer = new StringBuilder();
+
     private boolean done = false;
 
     public UserInput(OutputStream os) {
@@ -33,11 +38,31 @@ public class UserInput extends Thread {
     }
 
     public void setText(String txt) {
-        this.infoLabel.setText(txt);
+        this.promptBuffer = new StringBuilder(txt);
+        this.updateText();
     }
 
     public void appendText(String txt) {
-        this.infoLabel.setText(this.infoLabel.getText() + txt);
+        this.promptBuffer.append(txt);
+        this.updateText();
+    }
+
+    private void updateText() {
+        String txt = this.promptBuffer.toString();
+        txt = txt.replaceAll("\n", "<br>");
+        txt = txt.replaceAll(" ", "&nbsp;");
+
+        this.infoLabel.setText("<html><body>" + txt + "</body></html>");
+
+        int width = Math.max(this.infoLabel.getSize().width, 600);
+        int height = Math.max(100, Math.min(this.infoLabel.getSize().height, 600));
+        this.infoScroll.setMinimumSize(new Dimension(10, 100));
+        this.infoScroll.setMaximumSize(new Dimension(600, 600));
+        this.infoScroll.setPreferredSize(new Dimension(width, height));
+        JScrollBar vertical = this.infoScroll.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+        this.infoScroll.repaint();
+        this.mainPanel.repaint();
     }
 
     @Override
@@ -63,6 +88,7 @@ public class UserInput extends Thread {
     private void initComponents() {
         this.mainPanel.setLayout(new java.awt.GridBagLayout());
         java.awt.GridBagConstraints gbc;
+        this.infoLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -78,7 +104,9 @@ public class UserInput extends Thread {
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        this.mainPanel.add(this.infoLabel, gbc);
+        this.infoScroll.setViewportView(this.infoLabel);
+
+        this.mainPanel.add(infoScroll, gbc);
 
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -114,6 +142,12 @@ public class UserInput extends Thread {
     public void setErrorMode() {
         this.errorLabel.setVisible(true);
         this.inputField.setVisible(false);
-        this.infoLabel.setVisible(false);
+        this.infoScroll.setVisible(false);
+        this.mainPanel.repaint();
+    }
+
+    public void setDone() {
+        this.errorLabel.setText("<html><body><b>Phing has terminated</b></body></html>");
+        this.setErrorMode();
     }
 }

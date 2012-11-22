@@ -38,9 +38,8 @@ public class ListTargets {
             File exe = new File(OptionMain.getExecutable());
 
             cmd.append(exe.getAbsolutePath())
-                    .append(" -f ")
-                    .append(config.getAbsolutePath())
-                    .append(" -l");
+                    .append(" -l -q -f ")
+                    .append(config.getAbsolutePath());
             Process child = Runtime.getRuntime().exec(cmd.toString(), null, config.getParentFile());
             StringBuilder tmp = new StringBuilder();
             InputStream in = child.getInputStream();
