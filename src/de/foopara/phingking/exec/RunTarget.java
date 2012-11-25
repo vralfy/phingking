@@ -43,7 +43,7 @@ public class RunTarget {
             File logfile = File.createTempFile("phingking", ".log");
 
             cmd.append(exe.getAbsolutePath())
-                    .append(" -q -logfile ")
+                    .append(" -logfile ")
                     .append(logfile.getAbsolutePath())
                     .append(" -f ")
                     .append(config.getAbsolutePath())
