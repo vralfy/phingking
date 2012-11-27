@@ -26,4 +26,11 @@ public class OptionMain {
     public static void setExecutable(String exe) {
         OptionMain._modul().put(OptionMain.PREFIX + "executable", exe);
     }
+
+    public static boolean getUseInputHandler() {
+        return OptionMain._modul().get(OptionMain.PREFIX + "inputhandler", "false").compareTo("true") == 0;
+    }
+    public static void setUseInputHandler(boolean use) {
+        OptionMain._modul().put(OptionMain.PREFIX + "inputhandler", (use ? "true" : "false"));
+    }
 }

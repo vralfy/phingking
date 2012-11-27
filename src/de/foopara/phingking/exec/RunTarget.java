@@ -42,6 +42,8 @@ public class RunTarget {
             File exe = new File(OptionMain.getExecutable());
             File logfile = File.createTempFile("phingking", ".log");
 
+            InputHandler inputHandler = null;
+
             cmd.append(exe.getAbsolutePath())
                     .append(" -logfile ")
                     .append(logfile.getAbsolutePath())
@@ -55,6 +57,11 @@ public class RunTarget {
                         .append(this.target.getParameter().get(paramKey))
                         .append(" ");
             }
+            if (OptionMain.getUseInputHandler()) {
+                inputHandler = new InputHandler(config);
+                cmd.append("-inputhandler ").append(inputHandler.getHandlerClass()) .append(" ");
+            }
+
             cmd.append(this.target.getTarget());
 
             InputOutput ideIO = IOProvider.getDefault().getIO("PhingKing: " + this.target.getDisplayName(), true);
@@ -78,9 +85,8 @@ public class RunTarget {
                     tmp.append((char)c);
                     if (tmp.toString().trim().length() > 0) {
                         if (input == null || input.isDone()) {
-                            input = new UserInput(child.getOutputStream());
+                            input = new UserInput(child.getOutputStream(), inputHandler);
                             input.setText(tmp.toString().trim());
-                            input.start();
                         } else {
                             input.appendText(tmp.toString());
                         }
@@ -92,11 +98,12 @@ public class RunTarget {
                 if (child.waitFor() != 0) {
                     if (input != null && input.isDone() == false) {
                         input.setErrorMode();
+                        input.startSave();
                     } else {
-                        input = new UserInput(child.getOutputStream());
+                        input = new UserInput(child.getOutputStream(), inputHandler);
                         input.setText(tmp.toString());
                         input.setErrorMode();
-                        input.start();
+                        input.startSave();
                     }
                 }
             } catch (InterruptedException ex) {
@@ -104,6 +111,9 @@ public class RunTarget {
             }
             if (input != null) {
                 input.setDone();
+            }
+            if (inputHandler != null) {
+                inputHandler.delete();
             }
 
             tr.stopReading();

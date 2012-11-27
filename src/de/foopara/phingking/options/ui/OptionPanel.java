@@ -39,6 +39,7 @@ public class OptionPanel extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -57,17 +58,27 @@ public class OptionPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 3);
         add(jTextField1, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jCheckBox1, org.openide.util.NbBundle.getMessage(OptionPanel.class, "OptionPanel.jCheckBox1.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        add(jCheckBox1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
     public void save() {
-        OptionMain.setExecutable(jTextField1.getText());
+        OptionMain.setExecutable(this.jTextField1.getText());
+        OptionMain.setUseInputHandler(this.jCheckBox1.isSelected());
     }
 
     public void load() {
-        jTextField1.setText(OptionMain.getExecutable());
+        this.jTextField1.setText(OptionMain.getExecutable());
+        this.jCheckBox1.setSelected(OptionMain.getUseInputHandler());
     }
 }

@@ -23,6 +23,8 @@ import javax.swing.JTextField;
  */
 public class UserInput extends Thread {
     private final OutputStream out;
+    private final InputHandler ih;
+
     private final JPanel mainPanel = new JPanel();
     private final JLabel errorLabel = new JLabel();
     private final JScrollPane infoScroll = new JScrollPane();
@@ -32,8 +34,9 @@ public class UserInput extends Thread {
 
     private boolean done = false;
 
-    public UserInput(OutputStream os) {
+    public UserInput(OutputStream os, InputHandler ih) {
         this.out = os;
+        this.ih = ih;
         this.initComponents();
     }
 
@@ -49,6 +52,20 @@ public class UserInput extends Thread {
 
     private void updateText() {
         String txt = this.promptBuffer.toString();
+        System.out.println(txt);
+        if (this.ih != null && txt.contains(ih.getInputMarker()) && txt.lastIndexOf(ih.getInputMarker()) > 0) {
+            try {
+                String log = txt.substring(0, txt.lastIndexOf(ih.getInputMarker()));
+                this.out.write(log.getBytes());
+                txt = txt.substring(txt.lastIndexOf(ih.getInputMarker()));
+                this.promptBuffer = new StringBuilder(txt);
+            } catch (IOException ex) {
+            }
+        }
+
+        if (this.ih != null) {
+            txt = txt.replace(ih.getInputMarker(), "");
+        }
         txt = txt.replaceAll("\n", "<br>");
         txt = txt.replaceAll(" ", "&nbsp;");
 
@@ -63,6 +80,8 @@ public class UserInput extends Thread {
         vertical.setValue(vertical.getMaximum());
         this.infoScroll.repaint();
         this.mainPanel.repaint();
+
+        this.startSave();
     }
 
     @Override
@@ -74,7 +93,6 @@ public class UserInput extends Thread {
             //        JDialog jd = jop.createDialog(null, "User Input");
             //        jd.setVisible(true);
             //        jd.setVisible(true);
-
             JOptionPane.showMessageDialog(null, this.mainPanel, "User input", JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
             if (this.out != null) {
                 this.out.write((this.inputField.getText() + "\n").getBytes());
@@ -143,11 +161,32 @@ public class UserInput extends Thread {
         this.errorLabel.setVisible(true);
         this.inputField.setVisible(false);
         this.infoScroll.setVisible(false);
-        this.mainPanel.repaint();
     }
 
     public void setDone() {
         this.errorLabel.setText("<html><body><b>Phing has terminated</b></body></html>");
         this.setErrorMode();
+    }
+
+    public void startSave()
+    {
+        if (this.isAlive()) {
+            return;
+        }
+
+        if (this.isDone()) {
+            return;
+        }
+
+        boolean start = false;
+        if (this.ih == null) {
+            start = true;
+        } else if (this.promptBuffer.toString().contains(this.ih.getInputMarker())) {
+            start = true;
+        }
+
+        if (start) {
+            this.start();
+        }
     }
 }
