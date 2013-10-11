@@ -5,11 +5,8 @@
 package de.foopara.phingking.registry;
 
 import de.foopara.phingking.exec.ListTargets;
-import de.foopara.phingking.exec.RunTarget;
 import de.foopara.phingking.options.FavoritedTargets;
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.netbeans.api.project.FileOwnerQuery;
